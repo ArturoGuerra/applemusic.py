@@ -1,27 +1,18 @@
 from requests import Request, Session
-from typing import Optional, List
-from .types.albums import Album, AlbumRelationships
-from .types.artists import ArtistsRelationship
-from .types.songs import SongsRelationship
+from typing import Dict, Optional, List
+from .types import Album, AlbumRelationships, ArtistsRelationship, SongsRelationship
+from .errors import APIError
+from .utils import auth_check
 
 DEFAULT_STOREFRONT = "us"
 
-class APIError(Exception):
-    def __init__(self, code, message):
-        self.code = code
-        self.message = message
-        super().__init__(f"Code: {code} Message: {message}")
-
-def auth_check(func):
-    def inner(self, *args, **kwargs):
-        if self.usertoken != None:
-            return func(self, *args, **kwargs)
-        raise APIError(401, "Unauthorized")
-    return inner
 
 
-class AppleMusicClient:
-    API_BASE = "https://api.music.apple.com/v1"
+"""
+Base client that interact with the REST api provided by Apple Inc. for their Apple Music service.
+"""
+class Client:
+    API_BASE: str = "https://api.music.apple.com/v1"
     
     # Apple Music HTTP API Paths
     def __init__(self, token, timeout=10, usertoken=None):
@@ -114,7 +105,7 @@ class AppleMusicClient:
         pass
 
     # Gets a single api resource by its id
-    def _get_catalog_resource(self, resource: str, storefront: str, id: str, query, relationship: str=None, view: str=None):
+    def _get_catalog_resource(self, resource: str, storefront: str, id: str, query: Dict, relationship: str=None, view: str=None) -> Dict:
         url = f"/catalog/{storefront}/{resource}/{id}"
         if relationship != None:
             url += f"/{relationship}"
@@ -127,7 +118,7 @@ class AppleMusicClient:
         return resp.json()["data"][0]
 
     # Gets multiple api resources by their ids    
-    def _get_catalog_resources(self, resource: str, storefront: str, query):
+    def _get_catalog_resources(self, resource: str, storefront: str, query: Dict):
         url = f"/catalog/{storefront}/{resource}"
         resp = self._request(url, query=query)
         if resp.status_code != 200:
@@ -136,7 +127,7 @@ class AppleMusicClient:
         return resp.json()["data"]
 
     # Fetches a single resource by id from the users library
-    def _get_library_resource(self, resource: str, id: str, query, relationship: str=None, view: str=None):
+    def _get_library_resource(self, resource: str, id: str, query: Dict, relationship: str=None, view: str=None):
         url = f"/me/library/{resource}/{id}"
         resp = self._request(url, query=query)
         if resp.status_code != 200:

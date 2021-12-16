@@ -1,1 +1,2 @@
-from .client import AppleMusicClient
+from .client import Client
+from .types import *

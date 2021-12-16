@@ -1,8 +1,10 @@
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING
 from .common import Preview, Artwork, PlayParameters
+
 if TYPE_CHECKING:
     from .albums import AlbumsRelationship
     from .artists import ArtistsRelationship
+    from .common import EditorialNotes
 
 class SongAttributes:
     """
@@ -38,7 +40,7 @@ class SongAttributes:
         self.discNumber: Optional[int] = data.get('discNumber', None)
         self.durationInMillis: int = data.get('durationInMillis')
         self.editorialNotes: Optional[EditorialNotes] = EditorialNotes(data.get('editorialNotes')) if data.get('editorialNotes') else None
-        self.genreNames: [str] = data.get('genreNames')
+        self.genreNames: List[str] = data.get('genreNames')
         self.hasLyrics: bool = data.get('hasLyrics')
         self.isrc: Optional[str] = data.get('isrc', None)
         self.movementCount: Optional[int] = data.get('movementCount', None)
@@ -46,7 +48,7 @@ class SongAttributes:
         self.movementNumber: Optional[int] = data.get('movementNumber', None)
         self.name: str = data.get('name')
         self.playParams: Optional[PlayParameters] = PlayParameters(data.get('playParams')) if data.get('playParams') else None
-        self.previews: [Preview] =[Preview(item) for item in data.get('previews')]
+        self.previews: List[Preview] =[Preview(item) for item in data.get('previews')]
         self.releaseDate: Optional[str] = data.get('releaseDate', None)
         self.trackNumber: Optional[int] = data.get('trackNumber', None)
         self.url: str = data.get('url')
@@ -66,11 +68,11 @@ class SongRelationships:
                 artists: 'ArtistsRelationship'):
         self.albums: AlbumsRelationship = albums
         self.artists: ArtistsRelationship = artists
-        #self.genres: GenresRelationship = GenresRelationship(data.get('genres'))
-        #self.station: StationRelationship = StationRelationship(data.get('station'))
-        #self.composers: ComposersRelationship = ComposersRelationship(data.get('composers'))
-        #self.library: LibrarySongsRelationship = LibrarySongsRelationship(data.get('library'))
-        #self.musicVideos: MusicVideosRelationship = MusicVideosRelationship(data.get('musicVideos'))
+        self.genres: GenresRelationship = GenresRelationship(data.get('genres'))
+        self.station: StationRelationship = StationRelationship(data.get('station'))
+        self.composers: ComposersRelationship = ComposersRelationship(data.get('composers'))
+        self.library: LibrarySongsRelationship = LibrarySongsRelationship(data.get('library'))
+        self.musicVideos: MusicVideosRelationship = MusicVideosRelationship(data.get('musicVideos'))
 
 class Song:
     """
@@ -94,4 +96,4 @@ class SongsRelationship:
     def __init__(self, data):
         self.href: str = data.get('href')
         self.next: str = data.get('next')
-        self.data: [Song] = [Song(item, None) for item in data.get('data')]
+        self.data: List[Song] = [Song(item, None) for item in data.get('data')]

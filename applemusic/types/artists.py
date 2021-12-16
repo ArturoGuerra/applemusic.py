@@ -1,5 +1,5 @@
 from .common import EditorialNotes
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .albums import AlbumsRelationship
@@ -13,7 +13,7 @@ class ArtistAttributes:
     """
     def __init__(self, data):
         self.editorialNotes: EditorialNotes = EditorialNotes(data.get('editorialNotes'))
-        self.genreNames: [str] = data.get('genreNames')
+        self.genreNames: List[str] = data.get('genreNames')
         self.name: str = data.get('name')
         self.url: str = data.get('url')
 
@@ -51,4 +51,4 @@ next: The next page of the relationship: string
     def __init__(self, data):
         self.href: str = data.get('href')
         self.next: str = data.get('next')
-        self.data: [Artist] = [Artist(item, None) for item in data.get('data')]
+        self.data: List[Artist] = [Artist(item, None) for item in data.get('data')]
